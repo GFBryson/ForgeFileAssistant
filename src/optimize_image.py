@@ -5,6 +5,7 @@ from PIL import Image
 
 from src.get_paths import get_filepath
 
+Image.MAX_IMAGE_PIXELS = None
 
 def save_image_as_webp(image_path: str):
     im = Image.open(image_path).convert('RGB')
