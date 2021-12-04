@@ -1,0 +1,3 @@
+build/*
+dist/remove_image_from_json.exe
+venv/*
