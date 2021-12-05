@@ -4,7 +4,7 @@
 block_cipher = None
 
 
-a = Analysis(['src/main.py'],
+a = Analysis(['.\\src\\main.py'],
              pathex=[],
              binaries=[],
              datas=[],
@@ -26,7 +26,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,  
           [],
-          name='Foundry File Assistant',
+          name='FoundryFileAssistant',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
