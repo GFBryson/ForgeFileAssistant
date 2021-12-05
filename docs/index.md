@@ -1,4 +1,7 @@
 # Foundry File Assistant
+[Download the Latest Release Executable](https://github.com/GFBryson/FoundryFileAssistant/releases/latest/download/FoundryFileAssistant.exe)
+
+[View the Latest Release Notes](https://github.com/GFBryson/FoundryFileAssistant/releases/latest)
 ## Overview
 The purpose of this project is to provide a simple way to help users of FoundryVTT clean and optimise files they wish to import to or use with the FoundryVTT system.
 
