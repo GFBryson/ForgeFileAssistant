@@ -9,11 +9,11 @@ The project was born out of an error that happened when a `.json` scene file for
 
 ## Functions
 ### Image Stripping
-**FFA** can read in a scene json file and take out the image string, saving it to a place of the users choosing.
+**FFA** can read in a scene `.json` file and take out the image string, saving it to a place of the users choosing.
 
-If the user stores the image within their FoundryVTT file system the json will receive a path to that image so it will automatically load in when the user imports the scene json file.
+If the user stores the image within their FoundryVTT file system the json will receive a path to that image so it will automatically load in when the user imports the scene `.json` file.
 
 Additionally users may opt to save the image as a `.webp` file rather than a `.jpg`
 
 ### Image Format Conversion
-**FFA** can take in a .png or `.jpg` file and convert it to FoundryVTT's preferred format of `.webp`
+**FFA** can take in a `.png` or `.jpg` file and convert it to FoundryVTT's preferred format of `.webp`
