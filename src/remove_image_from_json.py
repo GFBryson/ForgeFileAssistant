@@ -14,9 +14,11 @@ from io import BytesIO
 from json import loads, dumps
 from os import path
 from tkinter import *
-from src.get_paths import get_filepath, get_directorypath
 
 from PIL import Image as pil_Image
+
+from src.get_paths import get_filepath, get_directorypath
+from src.optimize_image import save_base64_as_webp
 
 
 def warning_toggle(full_image_string, warning_not_foundry):
@@ -43,21 +45,6 @@ def save_base64_as_jpeg(image_directory_save_path: str, name: str, img_bit64: st
     return world_path
 
 
-def save_base64_as_webp(image_directory_save_path: str, name: str, img_bit64: str):
-    image_save_path = f"{image_directory_save_path}/{name.replace('json', 'webp')}"
-    foundry_split = image_save_path.split("FoundryVTT/Data/")
-    world_path = "" if len(foundry_split) < 2 else foundry_split[1]
-    # if you haven't specified a location within the foundry directory the img location will be
-    # left blank and you'll need to import the image to foundry seperatly
-
-    image_decoded = base64.b64decode(img_bit64)
-    webp_img = pil_Image.open(BytesIO(image_decoded)).convert("RGB")
-
-    webp_img.save(image_save_path, "webp")
-
-    return world_path
-
-
 def pull_components_from_json(json_path: str):
     with open(json_path, "r") as infile:
         scene_data = loads(infile.read())
@@ -67,24 +54,36 @@ def pull_components_from_json(json_path: str):
     return scene_data, img_base64
 
 
-def clean_and_save(json_path: str, image_directory_save_path: str, optimize_image_bool: bool):
+def clean_and_save(json_path: str, image_directory_save_path: str, optimize_image_bool: bool, warning_image_sz: Text,
+                   status_text: StringVar):
+    status_text.set("Starting Clean")
     scene_data, img_bit64 = pull_components_from_json(json_path)
 
     name = path.basename(json_path)
-
     if optimize_image_bool:
-        world_path = save_base64_as_webp(image_directory_save_path=image_directory_save_path, name=name, img_bit64=img_bit64)
-        new_format = 'webp'
+        status_text.set("Optimizing and Saving Image")
+        world_path = save_base64_as_webp(image_directory_save_path=image_directory_save_path, name=name,
+                                         warning_image_sz=warning_image_sz, img_bit64=img_bit64)
+        if world_path == "":
+            status_text.set("Saving Image")
+            world_path = save_base64_as_jpeg(image_directory_save_path=image_directory_save_path, name=name,
+                                             img_bit64=img_bit64)
+            new_format = 'jpeg'
+        else:
+            new_format = 'webp'
     else:
-        world_path = save_base64_as_jpeg(image_directory_save_path=image_directory_save_path, name=name, img_bit64=img_bit64)
+        status_text.set("Saving Image")
+        world_path = save_base64_as_jpeg(image_directory_save_path=image_directory_save_path, name=name,
+                                         img_bit64=img_bit64)
         new_format = 'jpeg'
 
     scene_data['img'] = world_path
 
+    status_text.set("Saving Cleaned Scene File")
     with open(json_path.replace(".json", "_cleaned.json"), 'w') as outfile:
         outfile.write(dumps(scene_data))
 
-    return f"\"{json_path}\" has been cleaned\nImage saved as {new_format} to {world_path}"
+    status_text.set(f"\"{json_path}\" has been cleaned\nImage saved as {new_format} to {world_path}")
 
 
 def get_remove_image_from_json_tab(window):
@@ -99,7 +98,9 @@ def get_remove_image_from_json_tab(window):
     json_label = Label(source_frame, text='Source json file for cleaning').pack(side='left')
     json_path = Entry(source_frame, textvariable=json_string).pack(side='left', expand=True, fill='x')
 
-    browse_button_1 = Button(source_frame, text="Browse", command=lambda: get_filepath(json_string, filetypes=[("json files", "*.json")])).pack(side='right')
+    browse_button_1 = Button(source_frame, text="Browse",
+                             command=lambda: get_filepath(json_string, filetypes=[("json files", "*.json")])).pack(
+        side='right')
 
     source_frame.pack(fill='x', side='top')
     # ------------
@@ -109,10 +110,14 @@ def get_remove_image_from_json_tab(window):
     full_image_path = Entry(image_destination_frame, textvariable=full_image_string).pack(side='left', expand=True,
                                                                                           fill='x')
     browse_button_2 = Button(image_destination_frame, text="Browse",
-                             command=lambda: get_directorypath(full_image_string, lambda: warning_toggle(full_image_string, warning_not_foundry))).pack(side='right')
+                             command=lambda: get_directorypath(full_image_string,
+                                                               lambda: warning_toggle(full_image_string,
+                                                                                      warning_not_foundry))).pack(
+        side='right')
     image_destination_frame.pack(fill='x', side='top')
     # ------------
     options_frame = Frame(tab_root)
+
     optimize_image_bool = BooleanVar()
     optimize_image_bool.set(False)
     optimize_image_tick = Checkbutton(options_frame, text="Optimize and save .jpeg image in .webp format",
@@ -121,16 +126,22 @@ def get_remove_image_from_json_tab(window):
     options_frame.pack(side='top')
     # ------------
     bottom_frame = Frame(tab_root)
-    warning_not_foundry = Text(bottom_frame, fg='red', bg='yellow', height=20)
+
+    warning_image_sz = Text(bottom_frame, fg='red', bg='yellow', height=10, wrap=WORD)
+    warning_image_sz.insert(INSERT,
+                            "The image you have selected is too large to convert to .webp format. Your image has been saved as a .jpg")
+
+    warning_not_foundry = Text(bottom_frame, fg='red', bg='yellow', height=5, wrap=WORD)
     warning_not_foundry.insert(INSERT,
-                               "WARNING: the selected image destination does not appear to be within Foundry's file system. The clean will still work however you will have to import the map image to foundry seperatly after importing the json")
+                               "WARNING: the selected image destination does not appear to be within Foundry's file system. The clean will still work, however you will need to import the map image to foundry seperatly after importing the scene json")
 
     status_text = StringVar()
     status_text.set("")
     status_label = Label(bottom_frame, textvariable=status_text)
-    trigger_button = Button(bottom_frame, text="clean and save image", command=lambda: status_text.set(
-        clean_and_save(json_path=json_string.get(), image_directory_save_path=full_image_string.get(),
-                       optimize_image_bool=optimize_image_bool.get()))).pack(side='bottom')
+    trigger_button = Button(bottom_frame, text="clean and save image", command=lambda:
+    clean_and_save(json_path=json_string.get(), image_directory_save_path=full_image_string.get(),
+                   optimize_image_bool=optimize_image_bool.get(), warning_image_sz=warning_image_sz,
+                   status_text=status_text)).pack(side='bottom')
     status_label.pack(side='top')
 
     bottom_frame.pack(side='bottom')
