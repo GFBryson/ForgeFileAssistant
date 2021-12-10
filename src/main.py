@@ -15,7 +15,7 @@ from tkinter.ttk import Notebook
 
 from src.Frames.remove_image_from_json_frame import get_remove_image_from_json_tab
 from src.Frames.optimise_image_frame import get_image_optimization_frame
-from src.split_map import get_split_map_frame
+from src.Frames.split_map_frame import get_split_map_frame
 
 if __name__ == '__main__':
     root_window = Tk()
