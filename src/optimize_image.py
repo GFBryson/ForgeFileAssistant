@@ -4,7 +4,6 @@ from tkinter import *
 from PIL import Image as pil_Image
 
 from src.common_frames import get_image_file_picker_frame
-from src.get_paths import get_filepath
 
 Image.MAX_IMAGE_PIXELS = None
 
