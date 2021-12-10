@@ -13,9 +13,9 @@ To run this script you'll need to
 from tkinter import *
 from tkinter.ttk import Notebook
 
-from src.Frames.remove_image_from_json_frame import get_remove_image_from_json_tab
-from src.Frames.optimise_image_frame import get_image_optimization_frame
-from src.Frames.split_map_frame import get_split_map_frame
+from src.Frames.Full_UI.remove_image_from_json_frame import get_remove_image_from_json_tab
+from src.Frames.Full_UI.optimise_image_frame import get_image_optimization_frame
+from src.Frames.Full_UI.split_map_frame import get_split_map_frame
 
 if __name__ == '__main__':
     root_window = Tk()
