@@ -1,17 +1,21 @@
 from os.path import splitext
 from tkinter import *
 
-from PIL import Image
+from PIL import Image as pil_Image
 
 from src.common_frames import get_image_file_picker_frame
 from src.get_paths import get_filepath
 
 Image.MAX_IMAGE_PIXELS = None
 
-def save_image_as_webp(image_path: str):
+def save_image_as_webp_from_path(image_path: str):
     im = Image.open(image_path).convert('RGB')
-    save_path, ext = splitext(image_path)
-    im.save(save_path + '.webp', 'webp')
+    return save_image_as_webp(im, image_path)
+
+
+def save_image_as_webp(image: pil_Image, image_output_path: str, tag: str = ""):
+    save_path, ext = splitext(image_output_path)
+    image.save(f'{save_path}_{tag}.webp', 'webp')
     return f"Done. Image saved to {save_path}.webp"
 
 
@@ -31,7 +35,7 @@ def get_image_optimization_frame(window):
     status_text.set("")
     status_label = Label(bottom_frame, textvariable=status_text)
     trigger_button = Button(bottom_frame, text="save image as .webp", command=lambda: status_text.set(
-        save_image_as_webp(image_path=image_filepath_str.get()))).pack(side='bottom')
+        save_image_as_webp_from_path(image_path=image_filepath_str.get()))).pack(side='bottom')
     status_label.pack(side='top')
 
     bottom_frame.pack(side='bottom')
