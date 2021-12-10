@@ -1,6 +1,6 @@
 from tkinter import Frame, Button, Text, StringVar, INSERT, Label
 
-from src.common_frames import get_image_file_picker_frame
+from src.Frames.Common_Frames.common_frames import get_image_file_picker_frame
 from src.optimize_image import save_image_as_webp_from_path
 
 

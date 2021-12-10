@@ -3,8 +3,6 @@ from tkinter import *
 
 from PIL import Image as pil_Image
 
-from src.common_frames import get_image_file_picker_frame
-
 Image.MAX_IMAGE_PIXELS = None
 
 def save_image_as_webp_from_path(image_path: str):

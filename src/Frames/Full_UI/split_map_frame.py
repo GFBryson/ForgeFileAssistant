@@ -1,5 +1,5 @@
 from tkinter import Frame, IntVar, Radiobutton, W, Button
-from src.common_frames import get_image_file_picker_frame
+from src.Frames.Common_Frames.common_frames import get_image_file_picker_frame
 
 def get_split_map_frame(window) -> Frame:
     tab_root = Frame(window)
